@@ -1,19 +1,19 @@
 import { StatusBar } from 'expo-status-bar';
 import { useState } from 'react';
-import { Button, StyleSheet, Text, View, TextInput, ScrollView, FlatList } from 'react-native';
+import { Button, StyleSheet, Text, View, TextInput, ScrollView } from 'react-native';
 
-export default function App() {
+export default function GoalsWithScrollviewScreen() {
 
-  const [inputGoalData, setInputGoalData] = useState('')
+  const [inputGoalData, setInputGoalData] = useState('Default')
   const [listOfGoals, setListOfGoals] = useState([])
 
   function addTextChanged(enteredText){
     setInputGoalData(enteredText)
   }
 
-  function addTextPressed(){  
+  function addTextPressed(){
     setListOfGoals((currentGoals) =>[
-      ...currentGoals, {text:inputGoalData,key: Math.random().toString()}
+      ...currentGoals, inputGoalData
     ]);
   }
 
@@ -28,18 +28,16 @@ export default function App() {
         <Button title='Add Goal'
             onPress={addTextPressed}/>
       </View>
-      <View style={styles.bottomContainer} alwaysBounceVertical = {false}>
+      <ScrollView style={styles.bottomContainer} alwaysBounceVertical = {false}>
         <View style={styles.lineBox} />
-        <FlatList 
-          data={listOfGoals}
-          renderItem={(itemData)=> 
-            <View style={styles.rowBox}>
-              <Text style={styles.rowText}>
-                {itemData.item.text}
-              </Text>
-            </View>}>
-        </FlatList>
-      </View>
+        <View>
+          {listOfGoals.map((goal)=> 
+              <View style={styles.rowBox}> 
+                <Text style={styles.rowText}>{goal}</Text
+              ></View>
+          )}
+        </View>
+      </ScrollView>
     </View>
   );
 }
@@ -68,13 +66,11 @@ const styles = StyleSheet.create({
     marginVertical: 5
   },
   bottomContainer:{
-    flex: 1,
-    flexDirection: 'column'
+    flex: 1
   },
   rowBox: {
-      backgroundColor: '#5e0acc',
-      padding: 8,
-      margin: 8,
+      backgroundColor: 'blue',
+      padding: 7,
       marginVertical: 2,
       borderRadius: 3
   },
