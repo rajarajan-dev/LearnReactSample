@@ -1,56 +1,75 @@
-import { StatusBar } from "expo-status-bar";
 import { useState } from "react";
 import {
-  Button,
   StyleSheet,
-  Text,
   View,
-  TextInput,
-  ScrollView,
   FlatList,
+  StatusBar,
+  SafeAreaView,
+  Button,
 } from "react-native";
+import GoalItem from "./components/GoalItem";
+import GoalInput from "./components/GoalInput";
 
 export default function App() {
-  const [inputGoalData, setInputGoalData] = useState("");
   const [listOfGoals, setListOfGoals] = useState([]);
+  const [modelIsVisible, setModelIsVisible] = useState(false);
 
-  function addTextChanged(enteredText) {
-    setInputGoalData(enteredText);
+  function addMyGoalHandler(){
+      setModelIsVisible(true);
   }
 
-  function addTextPressed() {
-    setListOfGoals((currentGoals) => [
-      ...currentGoals,
-      { text: inputGoalData, id: Math.random().toString() },
-    ]);
+  function endMyGoalHandler(){
+    setModelIsVisible(false);
+}
+
+  function onAddGoal(enteredText) {
+    let randomNumber = Math.random().toString();
+    if (listOfGoals === undefined) {
+      console.log("List of goals is undefined");
+    } else {
+      setListOfGoals((currentGoals) => [
+        ...currentGoals,
+        { text: enteredText, id: randomNumber },
+      ]);
+    }
+    endMyGoalHandler();
+  }
+
+  function onDeleteGoal(id) {
+    setListOfGoals((listOfGoals) => {
+      return listOfGoals.filter((goal) => goal.id !== id);
+    });
   }
 
   return (
-    <View style={styles.appContainer}>
-      <View style={styles.inputContainer}>
-        <TextInput
-          style={styles.inputBox}
-          onChangeText={addTextChanged}
-          placeholder="Enter your goal"
-        >
-          {inputGoalData}
-        </TextInput>
-        <Button title="Add Goal" onPress={addTextPressed} />
-      </View>
-      <View style={styles.bottomContainer} alwaysBounceVertical={false}>
-        <View style={styles.lineBox} />
-        <FlatList
-          data={listOfGoals}
-          renderItem={(itemData) => (
-            <View style={styles.rowBox}>
-              <Text style={styles.rowText}>{itemData.item.text}</Text>
-            </View>
-          )}
-          keyExtractor={(item, index) => {
-            return item.id;
-          }}
-        ></FlatList>
-      </View>
+    <View style={{ flex: 1 }}>
+      <StatusBar
+        backgroundColor="#FFff00" // Change the background color as needed
+        barStyle="light-content" // Change the text color (light or dark)
+      />
+      <SafeAreaView style={{ flex: 1 }}>
+        <View style={styles.appContainer}>
+          <Button title="Add a Goal" onPress={addMyGoalHandler} />
+          <GoalInput visible={modelIsVisible} onAddGoal={onAddGoal} endMyGoalHandler={endMyGoalHandler} />
+          <View style={styles.bottomContainer} alwaysBounceVertical={false}>
+            <FlatList
+              data={listOfGoals}
+              renderItem={(itemData) => {
+                return (
+                  <GoalItem
+                    text={itemData.item.text}
+                    id={itemData.item.id}
+                    onDeleteGoal={onDeleteGoal}
+                  />
+                );
+              }}
+              keyExtractor={(item, index) => {
+                return item.id;
+              }}
+            ></FlatList>
+          </View>
+        </View>
+      </SafeAreaView>
     </View>
   );
 }
@@ -58,39 +77,10 @@ export default function App() {
 const styles = StyleSheet.create({
   appContainer: {
     flex: 1,
-    marginTop: 80,
-    marginHorizontal: 16,
-  },
-  inputContainer: {
-    margin: 5,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  inputBox: {
-    borderWidth: 1,
-    borderColor: "#cccccc",
-    flex: 1,
-    padding: 8,
-  },
-  lineBox: {
-    height: 1,
-    backgroundColor: "#cccccc",
-    marginVertical: 5,
+    paddingTop: 10,
   },
   bottomContainer: {
     flex: 1,
     flexDirection: "column",
-  },
-  rowBox: {
-    backgroundColor: "#5e0acc",
-    padding: 8,
-    margin: 8,
-    marginVertical: 2,
-    borderRadius: 3,
-  },
-  rowText: {
-    color: "white",
-    marginLeft: 5,
   },
 });
